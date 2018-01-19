@@ -9,10 +9,15 @@ else()
 endif()
 
 include_directories(
+	ssl-vision/src/shared/net
+	ssl-vision/src/shared/util
+	ssl-vision/build
+	${PROJECT_BINARY_DIR}
 	${PROTOBUF_INCLUDE_DIRS}
 )
 
 add_subdirectory(ssl-vision)
+#add_subdirectory(grSim)
 
 set(SRCS
 	main.cpp
@@ -20,10 +25,9 @@ set(SRCS
 	client.h
 )
 
-include_directories(ssl-vision/src/shared/net)
-
-
+set (libs ${PROTOBUF_LIBRARIES} sslvision)
 add_executable(newclient ${SRCS})
-target_link_libraries(newclient ${PROTOBUF_LIBRARIES})
+target_link_libraries(newclient ${libs})
+
 
 install(TARGETS newclient RUNTIME DESTINATION bin)

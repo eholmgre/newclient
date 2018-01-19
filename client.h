@@ -7,12 +7,12 @@
 #include "messages_robocup_ssl_geometry.pb.h"
 #include "messages_robocup_ssl_wrapper.pb.h"
 
-namespace newclient {
   class Client {
-  
+   void printRobotInfo(const SSL_DetectionRobot & robot);
   public:
-   Client(); 
+   Client();
+   
+   void run();
   };
-};
 
 #endif

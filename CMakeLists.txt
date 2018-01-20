@@ -26,6 +26,8 @@ set(SRCS
         src/main.cpp
         src/vision.cpp
         src/vision.h
+        src/field.h
+        src/robot.h
         )
 
 set(libs ${PROTOBUF_LIBRARIES} sslvision)

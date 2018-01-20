@@ -10,14 +10,17 @@
 #include "messages_robocup_ssl_geometry.pb.h"
 #include "messages_robocup_ssl_wrapper.pb.h"
 
-namespace newclient {
+namespace newclient
+{
 
-  class Vision {
+  class Vision
+  {
     bool running = true;
+    Field &field;
     
    void printRobotInfo(const SSL_DetectionRobot & robot);
   public:
-   Vision();
+   Vision(Field &field) : field(field) {};
    
    void run();
    void operator()();

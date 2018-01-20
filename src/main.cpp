@@ -1,14 +1,21 @@
 #include <iostream>
-#include "client.h"
+#include <thread>
+
+#include "vision.h"
 
 
 int main(int argc, char **argv)
 {
   std::cout << "Initalizing\n";
   
-  Client client;
+  newclient::Vision vis;
   
-  client.run();
+  std::thread receive(vis);
+  
+  sleep(5000);
+  vis.stop();
+  
+  receive.join();
   return 0; 
 }
 

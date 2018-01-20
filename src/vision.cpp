@@ -1,14 +1,14 @@
-#include <stdio.h>
-#include "timer.h"
-#include "client.h"
+#include "vision.h"
 
-Client::Client()
+namespace newclient {
+
+Vision::Vision()
 {
 
 }
 
 void
-Client::printRobotInfo(const SSL_DetectionRobot & robot) {
+Vision::printRobotInfo(const SSL_DetectionRobot & robot) {
     printf("CONF=%4.2f ", robot.confidence());
     if (robot.has_robot_id()) {
         printf("ID=%3d ",robot.robot_id());
@@ -25,13 +25,13 @@ Client::printRobotInfo(const SSL_DetectionRobot & robot) {
 }
 
 void
-Client::run()
+Vision::operator()()
 {
     RoboCupSSLClient client;
     client.open(true);
     SSL_WrapperPacket packet;
 
-    while(true) {
+    while(running) {
         if (client.receive(packet)) {
             printf("-----Received Wrapper Packet---------------------------------------------\n");
             //see if the packet contains a robot detection frame:
@@ -120,5 +120,7 @@ Client::run()
             }
         }
     }
+    std::cout << "vision stopping\n";
 
+}
 }

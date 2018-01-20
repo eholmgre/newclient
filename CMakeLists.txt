@@ -5,6 +5,8 @@ include(ExternalProject)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
+set(CMAKE_CXX_STANDARD 11)
+
 find_package(Protobuf REQUIRED)
 find_package(ssl-vision REQUIRED)
 find_package(grSim)
@@ -22,8 +24,8 @@ include_directories(
 
 set(SRCS
         src/main.cpp
-        src/client.cpp
-        src/client.h
+        src/vision.cpp
+        src/vision.h
         )
 
 set(libs ${PROTOBUF_LIBRARIES} sslvision)

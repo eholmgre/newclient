@@ -1,0 +1,6 @@
+[submodule "external/grSim"]
+	path = external/grSim
+	url = https://github.com/RoboCup-SSL/grSim.git
+[submodule "external/ssl-vision"]
+	path = external/ssl-vision
+	url = https://github.com/RoboCup-SSL/ssl-vision.git

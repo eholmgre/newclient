@@ -1,6 +1,8 @@
 #ifndef newclient_robot_h
 #define newclient_robot_h
 
+
+
 namespace newclient
 {
   class Robot

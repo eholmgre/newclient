@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#include "field.h"
+
 #include "timer.h"
 #include "robocup_ssl_client.h"
 

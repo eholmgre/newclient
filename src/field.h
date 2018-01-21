@@ -2,6 +2,7 @@
 #define newclient_field_h
 
 #include <vector>
+#include <mutex>
 #include "robot.h"
 
 namespace newclient
@@ -9,6 +10,8 @@ namespace newclient
 
   class Field
   {
+    std::mutex roboMtx;
+    std::mutex ballMtx;
     class Ball
     {
     public:
@@ -17,13 +20,14 @@ namespace newclient
       double y_pos;
     };
     Ball ball;
-    std::vector<Robot> robots;
+    std::vector<Robot> team1;
+    std::vector<Robot> team2;
   public:
     Field() {};
-    void setRobot(int id, double x, double y);
+    void setRobot(int team, int id, double x, double y, double alpha);
     const Robot &getRobot(int id) const;
-    void setBall(double x, double y) { ball.x_pos = x; ball.y_pos; };
-    Ball getBal(void) { return Ball(ball.x_pos, ball.y_pos); };
+    void setBall(double x, double y);
+    const Ball &getBal(void) const { return ball; };
   
   };
 }

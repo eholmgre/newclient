@@ -29,13 +29,18 @@ set(SRCS
         src/vision.cpp
         src/vision.h
         src/field.h
+        src/field.cpp
         src/robot.h
+        src/communication.cpp
+        src/communication.h
 )
         
 add_library(nRF24L01P lib/rf/nRF24L01P.cpp lib/rf/nRF24L01P.cpp)
 link_libraries(nRF24L01P ft4222)
 
-set(libs ${PROTOBUF_LIBRARIES} sslvision ft4222 nRF24L01P)
+add_library(stream lib/rf/stream.cpp lib/rf/stream.h)
+
+set(libs ${PROTOBUF_LIBRARIES} sslvision ft4222 nRF24L01P stream)
 add_executable(newclient ${SRCS})
 target_link_libraries(newclient ${libs})
 

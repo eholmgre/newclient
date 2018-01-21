@@ -11,6 +11,7 @@ int main(int argc, char **argv)
   std::cout << "Initalizing\n";
   
   newclient::Radio radio;
+  radio.init();
   newclient::Field field;
   newclient::Vision vis(field);
   

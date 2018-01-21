@@ -38,7 +38,7 @@ namespace newclient
   
   void Radio::sendCommand(Payload payload)
   {
-   putFrameFloat(ID_ROBO_VEL, payload.x_vel, payload.y_vel, payload.omega), (uint8_t *)txBuffer);
+   putFrameFloat(ID_ROBO_VEL, payload.x_vel, payload.y_vel, payload.omega, (uint8_t *)txBuffer);
     my_nrf24l01p.write( NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE);
   }  
   

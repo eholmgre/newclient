@@ -22,11 +22,11 @@ int mtrV1, mtrV2, mtrV3, mtrV4;
 
 int main() {
 
-	my_nrf24l01p.disable();
-	my_nrf24l01p.powerDown();
-	wait_ms(20);
-	my_nrf24l01p.powerUp();
-	wait_ms(20);
+    my_nrf24l01p.disable();
+    my_nrf24l01p.powerDown();
+    wait_ms(20);
+    my_nrf24l01p.powerUp();
+    wait_ms(20);
     my_nrf24l01p.setTransferSize( TRANSFER_SIZE, NRF24L01P_PIPE_P0);
     if(my_nrf24l01p.getTransferSize( NRF24L01P_PIPE_P0) != TRANSFER_SIZE){
     	cout<< "nRF24 Error, RF module not initialized" << endl;

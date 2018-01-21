@@ -2,6 +2,7 @@
 #define newclient_communication_h
 
 #include <iostream>
+#include <unistd.h>
 #include "nRF24L01P.h"
 #include "stream.h"
 #include "csuRobocup_radioDef.h"
@@ -11,10 +12,18 @@ namespace newclient
  class Communication
  {
  public:
-   virtual void sendCommand(std::string payload) = 0;
- }
+   Communication() {};
+   class Payload
+   {
+   public:
+     float kp, ki, kd, vel;
+     Payload(float kp, float ki, float kd, float vel) : kp(kp), ki(ki), kd(kd), vel(vel) {};
+   };
+   
+   virtual void sendCommand(Payload payload);
+ };
  
- class Radio : Communication
+ class Radio// : public Communication
  {
    nRF24L01P my_nrf24l01p;
    char rxBuffer[TRANSFER_SIZE];
@@ -22,16 +31,30 @@ namespace newclient
    float kp, ki, kd, maxSum, maxITerm, xVel, yVel, wVel;
    int mtrV1, mtrV2, mtrV3, mtrV4;
  public:
-   Radio();
+   
+   class Payload
+   {
+   public:
+     int id;
+     float x_vel, y_vel, omega;
+     Payload(int id, float x_vel, float y_vel, float omega) :
+	id(id), x_vel(x_vel), y_vel(y_vel), omega(omega) {};
+   };
+   
+   Radio() {}
    void init();
-   void sendCommand(std::string payload);
- }
+   void sendCommand(Payload payload);
+   
+
+ };
  
- class Simulator : Communication
+ class Simulator : public Communication
  {
  public:
-   void sendCommand(std::string payload);
- }
+   Simulator() {};
+   void sendCommand(Payload payload) override;
+ };
+ 
 }
 
 #endif

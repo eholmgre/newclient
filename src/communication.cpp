@@ -6,36 +6,40 @@ namespace newclient
   {
       my_nrf24l01p.disable();
       my_nrf24l01p.powerDown();
-      wait_ms(20);
+      sleep(20);
       my_nrf24l01p.powerUp();
-      wait_ms(20);
+      sleep(20);
       my_nrf24l01p.setTransferSize( TRANSFER_SIZE, NRF24L01P_PIPE_P0);
       if(my_nrf24l01p.getTransferSize( NRF24L01P_PIPE_P0) != TRANSFER_SIZE){
-	  cout<< "nRF24 Error, RF module not initialized" << endl;
+	  std::cout<< "nRF24 Error, RF module not initialized\n";
       }
 
       my_nrf24l01p.setRfOutputPower();
       my_nrf24l01p.setReceiveMode();
       my_nrf24l01p.setTxAddress(NRF24_ADDRESS_ROBO1, ADDRESS_WIDTH);
-      cout<<"txAddress = " << NRF24_ADDRESS_ROBO1 << endl;
-      cout<<"read txAddress = " << my_nrf24l01p.getTxAddress() << endl;
+      std::cout << "txAddress = " << NRF24_ADDRESS_ROBO1 << "\n";
+      std::cout << "read txAddress = " << my_nrf24l01p.getTxAddress() << "\n";
       if(my_nrf24l01p.getTxAddress() != NRF24_ADDRESS_ROBO1){
-	  cout<< "tx address error" << endl;
+	  std::cout << "tx address error\n";
       }
       my_nrf24l01p.setRxAddress((unsigned long long)NRF24_ADDRESS_SERVER, ADDRESS_WIDTH, NRF24L01P_PIPE_P0);
-      cout<<"rxAddress = " << NRF24_ADDRESS_SERVER << endl;
-      cout<<"read rxAddress = " << my_nrf24l01p.getRxAddress() << endl;
+      std::cout<<"rxAddress = " << NRF24_ADDRESS_SERVER << "\n";
+      std::cout<<"read rxAddress = " << my_nrf24l01p.getRxAddress() << "\n";
       if(my_nrf24l01p.getRxAddress() != NRF24_ADDRESS_SERVER){
-	  cout<< "Rx address error" << endl;
+	  std::cout<< "Rx address error\n";
       }
 
       my_nrf24l01p.enable();
+      
+      putFrameFloat(ID_PID_K, kp, ki, kd, (uint8_t *)txBuffer);
+      my_nrf24l01p.write( NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE);
   }
 
   
-  void Radio::sendCommand(std::string payload)
+  void Radio::sendCommand(Payload payload)
   {
-
+   putFrameFloat(ID_ROBO_VEL, payload.x_vel, payload.y_vel, payload.omega), (uint8_t *)txBuffer);
+    my_nrf24l01p.write( NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE);
   }  
   
 }

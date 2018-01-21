@@ -3,11 +3,6 @@
 namespace newclient
 {
 
-  Vision::Vision()
-  {
-
-  }
-
   void Vision::printRobotInfo(const SSL_DetectionRobot & robot)
   {
       printf("CONF=%4.2f ", robot.confidence());

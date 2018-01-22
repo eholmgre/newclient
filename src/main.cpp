@@ -3,6 +3,7 @@
 #include <atomic>
 #include <vector>
 #include <cmath>
+#include <ctime>
 
 #include "vision.h"
 #include "field.h"
@@ -22,7 +23,11 @@ int main(int argc, char **argv)
   std::thread receive(vis, &run);
   std::cout << "main continuing\n";
   
-  while (true)
+  time_t start;
+  start = time(NULL);
+  while (time(NULL) < start + 60)
+  //bool looprun = true;
+  //while(looprun);
   {
    auto robots = field.getIDs();
    auto ball = field.getBall();
@@ -34,33 +39,55 @@ int main(int argc, char **argv)
    
    
    //double dir = atan2(std::get<1>(robot.getCords()) - ball.y_pos, std::get<0>(robot.getCords()) - ball.x_pos);   
-   double dif = (atan2(ball.x_pos - robot.x_pos , ball.y_pos - robot.y_pos) + (3.1415 / 2) - 3.14 - robot.alpha) * -1;
+   double dif = ( atan2(ball.x_pos - robot.x_pos , ball.y_pos - robot.y_pos) + 3.14 + 1.57 - robot.alpha);
    
    newclient::Radio::Payload payload(3, 0, 0 ,0);
-
-   if (abs(dif) > 1)
+   
+   if (dif > 3.15)
+     dif = -1 * (6.28 - dif);
+   
+   dif *= -1;
+   
+   std::cout << "dif: " << dif << '\n';
+   
+   
+/*
+   if (abs(dif) > .6)
    {
+     //while (abs(dif) > .5)
+     //{
      std::cout << "turning to face, dif: " << dif << "\n";
-     payload.omega = min(dif * .5, .4);
-     radio.sendCommand(payload);
+     
+     double omega = max(min(dif * .5, .25), -.25);
+     
+     std::cout << "omega: " << omega <<'\n';
+     
+     payload.omega = omega;
+
    }
    
-   else if (abs(robot.x_pos - ball.x_pos) > 5 && abs(robot.y_pos - ball.y_pos) > 5)
+   else*/ if (sqrt(pow(robot.x_pos - ball.x_pos,2) + pow(robot.y_pos - ball.y_pos, 2)) > 250)
    {
      std::cout << "forward to meet ball: " << sqrt(pow(robot.x_pos - ball.x_pos,2) + pow(robot.y_pos - ball.y_pos, 2)) << "\n";
-     payload.x_vel = .4;
-     radio.sendCommand(payload);
+     payload.y_vel = .42;
    }
-   else
-     radio.sendCommand(payload);
+   else {
      std::cout << "ball in range!\n";
+     //looprun = false;
+   }
+   radio.sendCommand(payload);
+
    
    //std::cout << dif << '\n';
     
     
    }
   }
-  
+  sleep(1);
+  newclient::Radio::Payload stop(3, 0, 0, 0);
+  radio.sendCommand(stop);
+     sleep(1);
+
   
   run.store(false);
   std::cout << "bool changed to " << run.load() << "\n";

@@ -7,6 +7,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 set(CMAKE_CXX_STANDARD 11)
 
+set(${CMAKE_BUILD_TYPE} Debug)
+
 find_package(Protobuf REQUIRED)
 find_package(ssl-vision REQUIRED)
 find_package(grSim)
@@ -35,7 +37,7 @@ set(SRCS
         src/communication.h
 )
         
-add_library(nRF24L01P lib/rf/nRF24L01P.cpp lib/rf/nRF24L01P.cpp)
+add_library(nRF24L01P lib/rf/nRF24L01P.h lib/rf/nRF24L01P.cpp)
 link_libraries(nRF24L01P ft4222)
 
 add_library(stream lib/rf/stream.cpp lib/rf/stream.h)

@@ -16,6 +16,7 @@ namespace newclient
    class Payload
    {
    public:
+     int id;
      float kp, ki, kd, vel;
      Payload(float kp, float ki, float kd, float vel) : kp(kp), ki(ki), kd(kd), vel(vel) {};
    };
@@ -28,8 +29,7 @@ namespace newclient
    nRF24L01P my_nrf24l01p;
    char rxBuffer[TRANSFER_SIZE];
    char txBuffer[TRANSFER_SIZE];// = "012345678912345";
-   float kp, ki, kd, maxSum, maxITerm, xVel, yVel, wVel;
-   int mtrV1, mtrV2, mtrV3, mtrV4;
+   float kp, ki, kd;
  public:
    
    class Payload
@@ -43,7 +43,7 @@ namespace newclient
    
    Radio() {}
    void init();
-   void sendCommand(Payload payload);
+   void sendCommand(Payload &payload);
    
 
  };

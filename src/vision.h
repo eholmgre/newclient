@@ -2,6 +2,7 @@
 #define newclient_vision_h
 
 #include <iostream>
+#include <atomic>
 
 #include "field.h"
 
@@ -17,16 +18,12 @@ namespace newclient
 
   class Vision
   {
-    bool running = true;
     Field &field;
-    
    void printRobotInfo(const SSL_DetectionRobot & robot);
   public:
    Vision(Field &field) : field(field) {};
-   
-   void run();
-   void operator()();
-   void stop() { this->running = false; };
+   Vision(const Vision &vis) : field(vis.field) {};
+   void operator()(atomic< bool >* run, bool print = false);
   };
 }
 

@@ -20,14 +20,16 @@ namespace newclient
       double y_pos;
     };
     Ball ball;
-    std::vector<Robot> team1;
-    std::vector<Robot> team2;
+    std::vector<Robot> robots;
   public:
     Field() {};
-    void setRobot(int team, int id, double x, double y, double alpha);
-    const Robot &getRobot(int id) const;
+    void setRobot(char color, int id, double x, double y, double alpha);
+    Robot &getRobot(char color, uint32_t id);
+    Robot &getRobot(std::string idstr);
     void setBall(double x, double y);
-    const Ball &getBal(void) const { return ball; };
+    const Ball &getBall(void) const { return ball; };
+    
+    std::vector<std::string> getIDs();
   
   };
 }

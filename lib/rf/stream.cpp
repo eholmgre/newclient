@@ -26,9 +26,14 @@
  	return *(_data + 0);
  }
 
- void putFrameFloat(uint8_t _id, float _data1, float _data2, float _data3, uint8_t *_stream){
+ uint8_t parseFrameRoboID(uint8_t *_stream){
+	 return *(_stream + 1);
+ }
+
+ void putFrameFloat(uint8_t _id, uint8_t _roboID, float _data1, float _data2, float _data3, uint8_t *_stream){
 	//std::cout<< "_id = " << (int)_id << std::endl;
  	*(_stream + 0) = _id;
+ 	*(_stream + 1) = _roboID;
  	//std::cout<< "*stream[0] = " << (int)*(_stream) << std::endl;
  	memcpy((_stream + 2), &_data1, 4);
  	memcpy((_stream + 7), &_data2, 4);

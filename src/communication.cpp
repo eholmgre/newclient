@@ -6,9 +6,9 @@ namespace newclient
   {
       my_nrf24l01p.disable();
       my_nrf24l01p.powerDown();
-      sleep(20);
+      usleep(200000);
       my_nrf24l01p.powerUp();
-      sleep(20);
+      usleep(200000);
       my_nrf24l01p.setTransferSize( TRANSFER_SIZE, NRF24L01P_PIPE_P0);
       if(my_nrf24l01p.getTransferSize( NRF24L01P_PIPE_P0) != TRANSFER_SIZE){
 	  std::cout<< "nRF24 Error, RF module not initialized\n";
@@ -31,14 +31,19 @@ namespace newclient
 
       my_nrf24l01p.enable();
       
-      putFrameFloat(ID_PID_K, kp, ki, kd, (uint8_t *)txBuffer);
+      kp = 55;
+      ki = 0.0;
+      kd = 12;
+      
+      putFrameFloat(1, 3, kp, ki, kd, (uint8_t *)txBuffer);
       my_nrf24l01p.write( NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE);
+      std::cout << "Radio initalized\n";
   }
 
   
-  void Radio::sendCommand(Payload payload)
+  void Radio::sendCommand(Payload &payload)
   {
-   putFrameFloat(ID_ROBO_VEL, payload.x_vel, payload.y_vel, payload.omega, (uint8_t *)txBuffer);
+   putFrameFloat(0, payload.id, payload.x_vel, payload.y_vel, payload.omega, (uint8_t *)txBuffer);
     my_nrf24l01p.write( NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE);
   }  
   

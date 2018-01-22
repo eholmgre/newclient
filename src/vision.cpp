@@ -20,17 +20,20 @@ namespace newclient
       printf("RAW=<%8.2f,%8.2f>\n",robot.pixel_x(),robot.pixel_y());
   }
 
-  void Vision::operator()()
+  
+  void Vision::operator()(std::atomic<bool> *run, bool print)
   {
       RoboCupSSLClient client;
       client.open(true);
       SSL_WrapperPacket packet;
-
-      while(running)
+      
+      std::cout << "Vision thread starting.\n";
+      
+      while(run->load())
       {
 	  if (client.receive(packet))
 	  {
-	      //printf("-----Received Wrapper Packet---------------------------------------------\n");
+	      if (print) printf("-----Received Wrapper Packet---------------------------------------------\n");
 	      //see if the packet contains a robot detection frame:
 	      if (packet.has_detection())
 	      {
@@ -38,13 +41,13 @@ namespace newclient
 		  //Display the contents of the robot detection results:
 		  double t_now = GetTimeSec();
 
-		  //printf("-[Detection Data]-------\n");
+		  if (print) printf("-[Detection Data]-------\n");
 		  //Frame info:
-		  //printf("Camera ID=%d FRAME=%d T_CAPTURE=%.4f\n",detection.camera_id(),detection.frame_number(),detection.t_capture());
+		  if (print) printf("Camera ID=%d FRAME=%d T_CAPTURE=%.4f\n",detection.camera_id(),detection.frame_number(),detection.t_capture());
 
-		  //printf("SSL-Vision Processing Latency                   %7.3fms\n",(detection.t_sent()-detection.t_capture())*1000.0);
-		  //printf("Network Latency (assuming synched system clock) %7.3fms\n",(t_now-detection.t_sent())*1000.0);
-		  //printf("Total Latency   (assuming synched system clock) %7.3fms\n",(t_now-detection.t_capture())*1000.0);
+		  if (print) printf("SSL-Vision Processing Latency                   %7.3fms\n",(detection.t_sent()-detection.t_capture())*1000.0);
+		  if (print) printf("Network Latency (assuming synched system clock) %7.3fms\n",(t_now-detection.t_sent())*1000.0);
+		  if (print) printf("Total Latency   (assuming synched system clock) %7.3fms\n",(t_now-detection.t_capture())*1000.0);
 		  int balls_n = detection.balls_size();
 		  int robots_blue_n =  detection.robots_blue_size();
 		  int robots_yellow_n =  detection.robots_yellow_size();
@@ -52,30 +55,30 @@ namespace newclient
 		  //Ball info:
 		  for (int i = 0; i < balls_n; i++) {
 		      SSL_DetectionBall ball = detection.balls(i);
-		      //printf("-Ball (%2d/%2d): CONF=%4.2f POS=<%9.2f,%9.2f> ", i+1, balls_n, ball.confidence(),ball.x(),ball.y());
+		      if (print) printf("-Ball (%2d/%2d): CONF=%4.2f POS=<%9.2f,%9.2f> ", i+1, balls_n, ball.confidence(),ball.x(),ball.y());
 		      if (ball.has_z()) {
-			  //printf("Z=%7.2f ",ball.z());
+			  if (print) printf("Z=%7.2f ",ball.z());
 		      } else {
-			  //printf("Z=N/A   ");
+			  if (print) printf("Z=N/A   ");
 		      }
-		      //printf("RAW=<%8.2f,%8.2f>\n",ball.pixel_x(),ball.pixel_y());
+		      if (print) printf("RAW=<%8.2f,%8.2f>\n",ball.pixel_x(),ball.pixel_y());
 		      field.setBall(ball.x(), ball.y());
 		  }
 
 		  //Blue robot info:
 		  for (int i = 0; i < robots_blue_n; i++) {
 		      SSL_DetectionRobot robot = detection.robots_blue(i);
-		      //printf("-Robot(B) (%2d/%2d): ",i+1, robots_blue_n);
-		      //this->printRobotInfo(robot);
-		      field.setRobot(1, robot.robot_id(), robot.x(), robot.y(), robot.orientation());
+		      if (print) printf("-Robot(B) (%2d/%2d): ",i+1, robots_blue_n);
+		      if (print) this->printRobotInfo(robot);
+		      field.setRobot('b', robot.robot_id(), robot.x(), robot.y(), robot.orientation());
 		  }
 
 		  //Yellow robot info:
 		  for (int i = 0; i < robots_yellow_n; i++) {
 		      SSL_DetectionRobot robot = detection.robots_yellow(i);
-		      //printf("-Robot(Y) (%2d/%2d): ",i+1, robots_yellow_n);
-		      //this->printRobotInfo(robot);
-		      field.setRobot(2, robot.robot_id(), robot.x(), robot.y(), robot.orientation());
+		      if (print) printf("-Robot(Y) (%2d/%2d): ",i+1, robots_yellow_n);
+		      if (print) this->printRobotInfo(robot);
+		      field.setRobot('y', robot.robot_id(), robot.x(), robot.y(), robot.orientation());
 
 		  }
 
@@ -123,7 +126,7 @@ namespace newclient
 	      } */
 	  }
       }
-      std::cout << "vision stopping\n";
-
+      std::cout << "Vision thread exiting\n";
   }
+
 }

@@ -1,18 +1,19 @@
 #ifndef newclient_robot_h
 #define newclient_robot_h
 
-
+#include <string>
 
 namespace newclient
 {
   class Robot
   {
   public:
-    int id;
+    char color;
+    uint32_t id;
     double x_pos, y_pos, alpha;
     double x_speed, y_speed, omega;
-    Robot(int id) : id(id) {};
-    Robot(int id, double x_pos, double y_pos, double alpha) : id(id), x_pos(x_pos), y_pos(y_pos), alpha(alpha) {};
+    Robot(char color, uint32_t id, double x_pos, double y_pos, double alpha) : color(color), id(id), x_pos(x_pos), y_pos(y_pos), alpha(alpha) {};
+    std::string getID() const { return std::string(color + std::to_string(id)); };
   };
 }
 

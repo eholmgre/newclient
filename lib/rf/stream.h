@@ -16,10 +16,10 @@
 #include <cstring>
 typedef unsigned char uint8_t;
 
-uint8_t parseFrameID(uint8_t *);
-void parseFrameFloat(uint8_t *, float *);
-void putFrameFloat(uint8_t, float, float, float, uint8_t *);
+uint8_t parseFrameRoboID(uint8_t *);
+void parseFrameFloat(uint8_t *, float *, float *, float *);
+void putFrameFloat(uint8_t, uint8_t, float, float, float, uint8_t *);
 
-void parseFrameInt(uint8_t *, int *, int *, int *, int *);
+void parseFrameInt(uint8_t *_stream, int *_data1, int *_data2, int *_data3, int *_data4);
 
 #endif

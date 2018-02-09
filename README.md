@@ -6,5 +6,6 @@ Dependicies:
 
 ### compile with cmake:
 * mkdir build
-* cd build cmake ..
+* cd build
+* cmake ..
 * make

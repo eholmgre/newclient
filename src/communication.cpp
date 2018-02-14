@@ -41,10 +41,36 @@ namespace newclient
   }
 
   
-  void Radio::sendCommand(Payload &payload)
+  void Radio::sendCommand(const Payload &payload)
   {
    putFrameFloat(0, payload.id, payload.x_vel, payload.y_vel, payload.omega, (uint8_t *)txBuffer);
     my_nrf24l01p.write( NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE);
-  }  
+  }
+  
+  void Simulator::init()
+  {
+    udpsoc.open(10006, true, true, true); // probably incorrect
+    addr.setHost("224.5.23.2", 20011); 
+  }
+  
+  void Simulator::sendCommand(const Communication::Payload& payload)
+  {
+    grSim_Packet packet;
+    packet.mutable_commands()->set_isteamyellow(true);
+    packet.mutable_commands()->set_timestamp(0.0);
+    grSim_Robot_Command *cmd = packet.mutable_commands()->add_robot_commands();
+    cmd->set_id(payload.id);
+    cmd->set_veltangent(payload.x_vel);
+    cmd->set_velnormal(payload.y_vel);
+    cmd->set_velangular(payload.omega);
+    
+    cmd->set_wheelsspeed(false);
+    cmd->set_kickspeedx(false);
+    cmd->set_kickspeedz(false);
+    cmd->set_spinner(false);
+    char *msg = new char[packet.ByteSize()];
+    packet.SerializeToArray(msg, packet.ByteSize());
+    udpsoc.send(msg, packet.ByteSize(), addr);
+  }
   
 }

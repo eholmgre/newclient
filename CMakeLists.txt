@@ -11,7 +11,7 @@ set(${CMAKE_BUILD_TYPE} Debug)
 
 find_package(Protobuf REQUIRED)
 find_package(ssl-vision REQUIRED)
-find_package(grSim)
+find_package(grSim REQUIRED)
 
 message(STATUS "building in: ${CMAKE_BINARY_DIR}")
 message(STATUS "building in: ${PROJECT_BINARY_DIR}")
@@ -19,10 +19,10 @@ message(STATUS "building in: ${PROJECT_BINARY_DIR}")
 include_directories(
         ${SSL_VISION_SRC_SHARED_NET}
         ${SSL_VISION_SRC_SHARED_UTIL}
-        ${PROJECT_BINARY_DIR}/external/ssl-vision
         ${PROTOBUF_INCLUDE_DIRS}
+        ${PROJECT_BINARY_DIR}/external/ssl-vision
+	${PROJECT_BINARY_DIR}/external/grSim
         ${CMAKE_SOURCE_DIR}/lib/rf
-        lib/rf
 )
 
 
@@ -35,6 +35,12 @@ set(SRCS
         src/robot.h
         src/communication.cpp
         src/communication.h
+        ${PROJECT_BINARY_DIR}/external/grSim/grSim_Commands.pb.cc 
+        ${PROJECT_BINARY_DIR}/external/grSim/grSim_Commands.pb.h
+        ${PROJECT_BINARY_DIR}/external/grSim/grSim_Packet.pb.cc
+        ${PROJECT_BINARY_DIR}/external/grSim/grSim_Packet.pb.h
+        ${PROJECT_BINARY_DIR}/external/grSim/grSim_Replacement.pb.cc
+        ${PROJECT_BINARY_DIR}/external/grSim/grSim_Replacement.pb.h
 )
         
 add_library(nRF24L01P lib/rf/nRF24L01P.h lib/rf/nRF24L01P.cpp)

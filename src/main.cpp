@@ -2,6 +2,7 @@
 #include <thread>
 #include <atomic>
 #include <vector>
+#include <string>
 #include <cmath>
 #include <ctime>
 
@@ -15,8 +16,8 @@ int main(int argc, char **argv)
 {
   std::cout << "Initalizing\n";
   
-  newclient::Radio radio;
-  radio.init();
+  newclient::Simulator radio;
+  //radio.init();
   newclient::Field field;
   newclient::Vision vis(field);
   std::atomic<bool> run(true);
@@ -25,10 +26,18 @@ int main(int argc, char **argv)
   
   time_t start;
   start = time(NULL);
-  while (time(NULL) < start + 60)
-  //bool looprun = true;
-  //while(looprun);
+  while (true)
   {
+   
+    std::string line;
+    if (std::getline(std::cin, line))
+    {
+      if (!std::strcmp(line.c_str(), "stop"))
+      {
+	break;
+      }
+    }
+    
    auto robots = field.getIDs();
    auto ball = field.getBall();
    
@@ -44,41 +53,40 @@ int main(int argc, char **argv)
    newclient::Radio::Payload payload(3, 0, 0 ,0);
    
    if (dif > 3.15)
-     dif = -1 * (6.28 - dif);
+   {
+     dif = -1 * (6.28 - dif); 
+   }
    
    dif *= -1;
    
    std::cout << "dif: " << dif << '\n';
    
    
-/*
    if (abs(dif) > .6)
    {
-     //while (abs(dif) > .5)
-     //{
-     std::cout << "turning to face, dif: " << dif << "\n";
-     
-     double omega = max(min(dif * .5, .25), -.25);
-     
-     std::cout << "omega: " << omega <<'\n';
-     
-     payload.omega = omega;
+     if (abs(dif) > .5)
+     {
+      std::cout << "turning to face, dif: " << dif << "\n";
+      
+      double omega = max(min(dif * .5, .25), -.25);
+      
+      std::cout << "omega: " << omega <<'\n';
+      
+      payload.omega = omega;
+     }
 
    }
    
-   else*/ if (sqrt(pow(robot.x_pos - ball.x_pos,2) + pow(robot.y_pos - ball.y_pos, 2)) > 250)
+   else if (sqrt(pow(robot.x_pos - ball.x_pos,2) + pow(robot.y_pos - ball.y_pos, 2)) > 250)
    {
      std::cout << "forward to meet ball: " << sqrt(pow(robot.x_pos - ball.x_pos,2) + pow(robot.y_pos - ball.y_pos, 2)) << "\n";
      payload.y_vel = .42;
    }
-   else {
+   else
+   {
      std::cout << "ball in range!\n";
-     //looprun = false;
    }
    radio.sendCommand(payload);
-
-   
-   //std::cout << dif << '\n';
     
     
    }

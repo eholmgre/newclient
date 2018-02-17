@@ -16,47 +16,56 @@
 
 namespace newclient
 {
- class Communication
- {
- public:
+    class Communication
+    {
+    public:
 
-   class Payload
-   {
-   public:
-     int id;
-     float x_vel, y_vel, omega;
-     Payload(int id, float x_vel, float y_vel, float omega) :
-	id(id), x_vel(x_vel), y_vel(y_vel), omega(omega) {};
-   };
-   
-   virtual void sendCommand(const Payload &payload) = 0;
-   virtual void init() = 0;
- };
- 
- class Radio : public Communication
- {
-   nRF24L01P my_nrf24l01p;
-   char rxBuffer[TRANSFER_SIZE];
-   char txBuffer[TRANSFER_SIZE];
-   float kp, ki, kd;
- public:
-   
-   void init() override;
-   void sendCommand(const Payload &payload) override;
-   
+        class Payload
+        {
+        public:
+            int id;
+            float x_vel, y_vel, omega;
 
- };
- 
- class Simulator : public Communication
- {
-   Net::UDP udpsoc;
-   Net::Address addr;
- public:
-   void sendCommand(const Payload &payload) override;
-   void init() override;
-   ~Simulator() { udpsoc.close(); };
- };
- 
+            Payload(int id, float x_vel, float y_vel, float omega) :
+                    id(id), x_vel(x_vel), y_vel(y_vel), omega(omega)
+            {};
+        };
+
+        virtual void sendCommand(const Payload &payload) = 0;
+
+        virtual void init() = 0;
+    };
+
+    class Radio : public Communication
+    {
+        nRF24L01P my_nrf24l01p;
+        char rxBuffer[TRANSFER_SIZE];
+        char txBuffer[TRANSFER_SIZE];
+        float kp, ki, kd;
+    public:
+
+        void init() override;
+
+        void sendCommand(const Payload &payload) override;
+
+
+    };
+
+    class Simulator : public Communication
+    {
+        Net::UDP udpsoc;
+        Net::Address addr;
+        const int _port = 20011;
+        const char *_addr = "127.0.0.1";
+    public:
+        void sendCommand(const Payload &payload) override;
+
+        void init() override;
+
+        ~Simulator()
+        { udpsoc.close(); };
+    };
+
 }
 
 #endif

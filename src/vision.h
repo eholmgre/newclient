@@ -16,15 +16,21 @@
 namespace newclient
 {
 
-  class Vision
-  {
-    Field &field;
-   void printRobotInfo(const SSL_DetectionRobot & robot);
-  public:
-   Vision(Field &field) : field(field) {};
-   Vision(const Vision &vis) : field(vis.field) {};
-   void operator()(atomic< bool >* run, bool print = false);
-  };
+    class Vision
+    {
+        Field &field;
+
+        void printRobotInfo(const SSL_DetectionRobot &robot);
+
+    public:
+        Vision(Field &field) : field(field)
+        {};
+
+        Vision(const Vision &vis) : field(vis.field)
+        {};
+
+        void operator()(atomic<bool> *run, bool print = false);
+    };
 }
 
 #endif

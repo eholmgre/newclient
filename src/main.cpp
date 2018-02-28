@@ -33,14 +33,6 @@ int main(int argc, char **argv)
     while (run)
     {
 
-        std::string line;
-        if (std::getline(std::cin, line))
-        {
-            if (!std::strcmp(line.c_str(), "stop"))
-            {
-                break;
-            }
-        }
 
         auto robots = field.getIDs();
         auto ball = field.getBall();
@@ -48,33 +40,26 @@ int main(int argc, char **argv)
         if (robots.size())
         {
             newclient::Robot robot = field.getRobot(robots[0]);
-            //std::cout << robot.getID() << ' ' << robot.x_pos << ' ' << robot.y_pos << ' ' << robot.alpha << '\n';
 
-
-            //double dir = atan2(std::get<1>(robot.getCords()) - ball.y_pos, std::get<0>(robot.getCords()) - ball.x_pos);
-            double dif = (atan2(ball.x_pos - robot.x_pos, ball.y_pos - robot.y_pos) + 3.14 + 1.57 - robot.alpha);
+            double dif = atan2(ball.y_pos - robot.y_pos, ball.x_pos - robot.x_pos) - robot.alpha;
+	    
+	    if (dif < 0)
+	      dif += 2 * 3.14;
 
             newclient::Radio::Payload payload(3, 0, 0, 0);
-
-            if (dif > 3.15)
-            {
-                dif = -1 * (6.28 - dif);
-            }
-
-            dif *= -1;
 
             std::cout << "dif: " << dif << '\n';
 
 
-            if (abs(dif) > .6)
+            if (abs(dif) > .4)
             {
-                if (abs(dif) > .5)
+                if (abs(dif) > .2)
                 {
-                    //std::cout << "turning to face, dif: " << dif << "\n";
+                    std::cout << "turning to face, dif: " << dif << "\n";
 
-                    double omega = max(min(dif * .5, .25), -.25);
+                    double omega = (dif < 3.14) ? 1 : -1;
 
-                    //std::cout << "omega: " << omega <<'\n';
+                    std::cout << "omega: " << omega <<'\n';
 
                     payload.omega = omega;
                 }

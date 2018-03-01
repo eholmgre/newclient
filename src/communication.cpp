@@ -78,10 +78,6 @@ namespace newclient
         {
             std::cerr << "Error sending UDP packet: [" << msg << "]\n";
         }
-        else
-        {
-            std::cout << "Send UDP packet successfully.\n";
-        }
     }
 
 }

@@ -52,6 +52,10 @@ int main(int argc, char **argv)
 	      std::cout << "turning to avoid robot at ";
 	      std::cout << blue.x_pos << ", " << blue.y_pos << '\n';
 	      
+	      /* need to find the line orthoganol to robot's differance slope and solve the two points on the
+	         sphere of infulance of the obstical and choose the one closet to out line assuming our line
+	         goes through the two points. */
+	      
 	      double dif = atan2(blue.y_pos + 500 - yellow.y_pos, blue.x_pos - yellow.x_pos) - yellow.alpha;
 	      if (dif < 0)
 		dif += 2 * 3.14;
@@ -60,7 +64,7 @@ int main(int argc, char **argv)
 	    
 	      newclient::Radio::Payload payload(3, 0, 0, 0);
 	    
-	      if (abs(dif) > .3)
+	      if (abs(dif) > .4)
 	      {
 		  if (abs(dif) > .1)
 		  {
@@ -87,7 +91,7 @@ int main(int argc, char **argv)
 	      std::cout << "dif: " << dif << '\n';
 
 
-	      if (abs(dif) > .3)
+	      if (abs(dif) > .4)
 	      {
 		  if (abs(dif) > .1)
 		  {

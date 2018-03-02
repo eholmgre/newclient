@@ -44,7 +44,7 @@ set(SRCS
 )
         
 add_library(nRF24L01P lib/rf/nRF24L01P.h lib/rf/nRF24L01P.cpp)
-link_libraries(nRF24L01P ft4222)
+target_link_libraries(nRF24L01P ft4222)
 
 add_library(stream lib/rf/stream.cpp lib/rf/stream.h)
 

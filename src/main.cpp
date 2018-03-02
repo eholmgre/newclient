@@ -36,6 +36,8 @@ int main(int argc, char **argv)
 
         if (robots.size() >= 2)
         {
+	  const double circ_inlf = 500;
+	  
             newclient::Robot yellow = field.getRobot(robots[1]);
 	    newclient::Robot blue = field.getRobot(robots[0]);
 	    
@@ -56,9 +58,48 @@ int main(int argc, char **argv)
 	         sphere of infulance of the obstical and choose the one closet to out line assuming our line
 	         goes through the two points. */
 	      
-	      double dif = atan2(blue.y_pos + 500 - yellow.y_pos, blue.x_pos - yellow.x_pos) - yellow.alpha;
-	      if (dif < 0)
-		dif += 2 * 3.14;
+	      
+	      
+	      double bee_line_slope = atan2(blue.y_pos - yellow.y_pos, blue.x_pos - yellow.x_pos) - yellow.alpha;
+	      if (bee_line_slope < 0)
+		bee_line_slope += 2 * 3.14;
+	      
+	      double perp_slope = (-1) * (1.0 / bee_line_slope);
+	      
+	      // perp_line := y - (blue.y_pos) = perp_slope * (x - blue.x_pos)
+	      //		y = perp_slope * (x - blue.x_pos) + blue.y_pos
+	      
+	      // cirlcle of influence = (x - blue.x_pos) ^ 2 + (y - blue.y_pos) ^ 2 = r ^ 2
+	      
+	      // (x - blue.x_pos) ^ 2 + (perp_slope * x) ^ 2 = r ^ 2
+	      // (perp_slope ^ 2 + 1) * x ^ 2 + 2 * blue.x_pos * x + (blue.y_pos ^ 2 - r ^ 2 + blue.x_pos ^ 2 - 2 * blue.y_pos ^ 2 + blue.y_pos ^ 2) = 0
+	      //	A = perp_slope ^ 2 + 1
+	      //	B = 2 * blue.x_pos
+	      //	C = blue.y_pos ^ 2 - r ^ 2 + blue.x_pos ^ 2 - 2 * blue.y_pos ^ 2 + blue.y_pos ^ 2
+	      
+	      // p1_x = (-B - sqrt(B ^ 2 - 4 * A * C)) / 2 A
+	      // p1_y = perp_slope * p1_x + blue.x_pos
+	      
+	      // p2_x = p1_x = (-B + sqrt(B ^ 2 - 4 * A * C)) / 2 A
+	      // p1_y = perp_slope * p1_x + blue.x_pos
+	      
+	      double A = std::pow(perp_slope, 2) + 1;
+	      double B = 2 * blue.x_pos;
+	      double C = std::pow(blue.y_pos, 2) - std::pow(circ_inlf, 2) + std::pow(blue.x_pos, 2)
+			 - std::pow(blue.y_pos, 2);
+			 
+	      double p1_x = ((-1) * B - std::sqrt(std::pow(B, 2) - 4 * A * C)) / 2 * A;
+	      double p1_y = perp_slope * p1_x + blue.x_pos;
+	      
+	      double p2_x = ((-1) * B + std::sqrt(std::pow(B, 2) - 4 * A * C)) / 2 * A;
+	      double p2_y = perp_slope * p2_x + blue.x_pos;
+	      
+	      std::cout << "p1: (" << p1_x << ", " << p1_y << ")\n";
+	      std::cout << "p2: (" << p2_x << ", " << p2_y << ")\n";
+	      
+	      
+	      
+	      double dif = atan2(p1_y - yellow.y_pos, p1_x - yellow.x_pos) - yellow.alpha;
 	      
 	      std::cout << "dif: " << dif << '\n';
 	    

@@ -48,10 +48,12 @@ int main(int argc, char **argv)
     const int goal_pos_x = -4500;
     const int goal_pos_y = 600;
     
-    PID aPID(.2, 0, 1);
+    PID aPID(2, 0, 3, -2, 2);
     
-    PID xPID(1, 1, 1);
-    PID yPID(1, 1, 1);
+    PID xPID(7, 0, 2, -2, 2);
+    PID yPID(7, 0, 2, -2, 2);
+    
+    sleep(1);
 
     time_t start;
     start = time(NULL);
@@ -59,13 +61,14 @@ int main(int argc, char **argv)
     {
         auto robots = field.getIDs();
         auto ball = field.getBall();
+	
 
         if (robots.size() >= 2)
         {
 	  const double circ_inlf = 500;
 	  
-            newclient::Robot yellow = field.getRobot(robots[1]);
-	    newclient::Robot blue = field.getRobot(robots[0]);
+            newclient::Robot yellow = field.getRobot('y', 3);
+	    newclient::Robot blue = field.getRobot('b', 2);
 	    
 	    //std::cout << "yellow: (" << yellow.x_pos << ", " << yellow.y_pos << ").\n";
 	    //std::cout << "blue: (" << blue.x_pos << ", " << blue.y_pos << ").\n";
@@ -85,27 +88,44 @@ int main(int argc, char **argv)
 	       * we are blocking the point 
 	       */
 	      
-	      newclient::Radio::Payload pld(2, aPID(blue.alpha, 3.14), 0, 0);
+	      newclient::Radio::Payload pld(2);
 	      
 		// we want to be facing towards center field
 	      
+	       pld.omega = aPID(blue.alpha + 3.14, 3.14);
 		
-	      /*
+	      if (/*pld.omega + 3 < 3.5 && pld.omega + 3 > 2.5*/ true )
+	      {
 		if (blue.y_pos < goal_neg_y - 600)
-		  pld.x_vel = -1;
+		  pld.y_vel = yPID(blue.y_pos, goal_neg_y);
 		else if (blue.y_pos > goal_pos_y + 600)
-		  pld.x_vel = 1;
+		  pld.y_vel = yPID(blue.y_pos, goal_pos_y);
 		
-		if (blue.x_pos < goal_neg_x)
-		  pld.y_vel = 1;
-		else if (blue.x_pos > goal_neg_x + 600)
-		  pld.y_vel = -1;
-		*/
+		
+		if (blue.x_pos < goal_neg_x or blue.x_pos > goal_neg_x + 600)
+		  pld.x_vel = xPID(blue.x_pos, goal_neg_x + 300);
+		
+	      }
+	      
+	      // solve point slope for the yellow bot and ball
+	      
+	      double slope = (yellow.y_pos - ball.y_pos) / (yellow.x_pos - ball.x_pos);
+	      
+	      // y - ball.y_pos = slope * (x - ball.x_pos) + ball.y_point
+	      
+	      double intersection = slope * (goal_neg_x - ball.x_pos) + ball.y_pos;
+	      
+	      if (intersection < goal_pos_y && intersection > goal_neg_y)
+		pld.y_vel = yPID(blue.y_pos, intersection);
 		
 		
 		
 		
 	      radio.sendCommand(pld);
+	      
+	      usleep(500);
+	      
+	      
 	    }
 	    /*
 	    
@@ -229,7 +249,7 @@ int main(int argc, char **argv)
 	  */
 	}
 	else
-	  std::cerr << "Could not locate two robots\n";
+	  std::cerr << "Could not locate two robots (" << robots.size() << ")\n";
     }
     sleep(1);
     newclient::Radio::Payload stop(3, 0, 0, 0);

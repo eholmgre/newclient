@@ -25,6 +25,11 @@ namespace newclient
         public:
             int id;
             float x_vel, y_vel, omega;
+	    
+	    Payload(int id) : id(id)
+	    {
+	      x_vel = y_vel = omega = 0;
+	    };
 
             Payload(int id, float x_vel, float y_vel, float omega) :
                     id(id), x_vel(x_vel), y_vel(y_vel), omega(omega)

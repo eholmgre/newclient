@@ -69,8 +69,8 @@ namespace newclient
         packet.mutable_commands()->set_timestamp(0.0);
         grSim_Robot_Command *cmd = packet.mutable_commands()->add_robot_commands();
         cmd->set_id(payload.id);
-        cmd->set_veltangent(payload.y_vel);
-        cmd->set_velnormal(payload.x_vel);
+        cmd->set_veltangent(payload.x_vel);
+        cmd->set_velnormal(payload.y_vel);
         cmd->set_velangular(payload.omega);
 
         cmd->set_wheelsspeed(false);

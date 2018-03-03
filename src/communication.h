@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <unistd.h>
+#include <fstream>
 
 #include "nRF24L01P.h"
 #include "stream.h"
@@ -43,10 +44,11 @@ namespace newclient
 
     class Radio : public Communication
     {
-        nRF24L01P my_nrf24l01p;
+        //nRF24L01P my_nrf24l01p;
         char rxBuffer[TRANSFER_SIZE];
         char txBuffer[TRANSFER_SIZE];
         float kp, ki, kd;
+	std::ofstream to_radio;
     public:
 
         void init(bool _=false) override;

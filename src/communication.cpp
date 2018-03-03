@@ -2,6 +2,7 @@
 
 namespace newclient
 {
+  /*
     void Radio::init(bool)
     {
         my_nrf24l01p.disable();
@@ -53,6 +54,24 @@ namespace newclient
         putFrameFloat(0, payload.id, payload.x_vel, payload.y_vel, payload.omega, (uint8_t *) txBuffer);
         my_nrf24l01p.write(NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE);
     }
+    */
+  
+    void Radio::init(bool _)
+    {
+	to_radio.open("/dev/ttyACM0");
+	putFrameFloat(1, 3, kp, ki, kd, (uint8_t *) txBuffer);
+	to_radio.write(txBuffer, TRANSFER_SIZE);
+	
+    }
+
+    void Radio::sendCommand(const Payload &payload)
+    {
+        putFrameFloat(0, payload.id, payload.x_vel, payload.y_vel, payload.omega, (uint8_t *) txBuffer);
+	to_radio.write(txBuffer, TRANSFER_SIZE);
+	
+
+    }
+
 
     void Simulator::init(bool _yellow)
     {

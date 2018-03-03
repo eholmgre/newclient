@@ -33,8 +33,8 @@ int main(int argc, char **argv)
     }
     cout << "Initalizing\n";
 
-    newclient::Simulator radio;
-    //newclient::Radio radio;
+    //newclient::Simulator radio;
+    newclient::Radio radio;
     radio.init(is_yellow);
     newclient::Field field;
     newclient::Vision vis(field);
@@ -42,19 +42,38 @@ int main(int argc, char **argv)
     std::thread receive(vis, &run);
     std::cout << "main continuing\n";
     
+    newclient::Radio::Payload payload(1, 1, 1, 0);
+    
+    radio.sendCommand(payload);
+    
+    sleep(5);
+    
+    payload.x_vel = 0;
+    payload.y_vel = 0;
+    
+    radio.sendCommand(payload);
+    
+    sleep(1);
+    
+    run.store(false);
+    std::cout << "bool changed to " << run.load() << "\n";
+
+    receive.join();
+    
+    return 0;
+    
     const int goal_neg_x = -4500;
     const int goal_neg_y = -600;
 	    
     const int goal_pos_x = -4500;
     const int goal_pos_y = 600;
     
-    PID aPID(2, 0, 3, -2, 2);
+    PID aPID(1, 0, 6, -2, 2, .5);
     
-    PID xPID(7, 0, 2, -2, 2);
-    PID yPID(7, 0, 2, -2, 2);
+    PID xPID(1, 0, 12, -2, 2, .33);
+    PID yPID(1, 0, 12, -2, 2, .33);
     
     sleep(1);
-
     time_t start;
     start = time(NULL);
     while (run)
@@ -93,19 +112,23 @@ int main(int argc, char **argv)
 		// we want to be facing towards center field
 	      
 	       pld.omega = aPID(blue.alpha + 3.14, 3.14);
+	       
+	       pld.x_vel = xPID(blue.x_pos, 0) * std::fmax(std::abs(std::cos(blue.alpha + 3.14)), .2);
+	       pld.y_vel = yPID(blue.y_pos, 0) * std::fmax(std::abs(std::sin(blue.alpha + 3.14)), .2);
 		
-	      if (/*pld.omega + 3 < 3.5 && pld.omega + 3 > 2.5*/ true )
-	      {
+	       /*
+	       
 		if (blue.y_pos < goal_neg_y - 600)
 		  pld.y_vel = yPID(blue.y_pos, goal_neg_y);
 		else if (blue.y_pos > goal_pos_y + 600)
 		  pld.y_vel = yPID(blue.y_pos, goal_pos_y);
 		
 		
+		
+		
 		if (blue.x_pos < goal_neg_x or blue.x_pos > goal_neg_x + 600)
 		  pld.x_vel = xPID(blue.x_pos, goal_neg_x + 300);
 		
-	      }
 	      
 	      // solve point slope for the yellow bot and ball
 	      
@@ -113,10 +136,17 @@ int main(int argc, char **argv)
 	      
 	      // y - ball.y_pos = slope * (x - ball.x_pos) + ball.y_point
 	      
-	      double intersection = slope * (goal_neg_x - ball.x_pos) + ball.y_pos;
+	      double intersection = slope * (goal_neg_x + 100 - ball.x_pos) + ball.y_pos;
 	      
 	      if (intersection < goal_pos_y && intersection > goal_neg_y)
+	      {
+		cout << "intersection at : " << intersection << "\n";
 		pld.y_vel = yPID(blue.y_pos, intersection);
+		pld.x_vel = xPID(blue.x_pos, goal_neg_x + 100);
+		pld.omega = aPID(blue.alpha + 3.14, 3.14); 
+	      }
+	      
+	      */
 		
 		
 		

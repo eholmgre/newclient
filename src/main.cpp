@@ -14,18 +14,44 @@
 #include "field.h"
 #include "robot.h"
 #include "communication.h"
+#include "PID.h"
+
+using std::cout;
+using std::cin;
+using std::string;
+
+using newclient::PID;
 
 int main(int argc, char **argv)
 {
-    std::cout << "Initalizing\n";
+    bool is_yellow = true; // Playing as yellow is default
+    if (argc > 1)
+    {
+      string color = *(argv + 1);
+      if (color == "Blue" or color == "blue" or color == "B" or color == "b")
+	is_yellow = false;
+    }
+    cout << "Initalizing\n";
 
     newclient::Simulator radio;
-    radio.init();
+    //newclient::Radio radio;
+    radio.init(is_yellow);
     newclient::Field field;
     newclient::Vision vis(field);
     std::atomic<bool> run(true);
     std::thread receive(vis, &run);
     std::cout << "main continuing\n";
+    
+    const int goal_neg_x = -4500;
+    const int goal_neg_y = -600;
+	    
+    const int goal_pos_x = -4500;
+    const int goal_pos_y = 600;
+    
+    PID aPID(.2, 0, 1);
+    
+    PID xPID(1, 1, 1);
+    PID yPID(1, 1, 1);
 
     time_t start;
     start = time(NULL);
@@ -41,10 +67,47 @@ int main(int argc, char **argv)
             newclient::Robot yellow = field.getRobot(robots[1]);
 	    newclient::Robot blue = field.getRobot(robots[0]);
 	    
-	    std::cout << "yellow: (" << yellow.x_pos << ", " << yellow.y_pos << ").\n";
-	    std::cout << "blue: (" << blue.x_pos << ", " << blue.y_pos << ").\n";
-	    std::cout << "ball: (" << ball.x_pos << ", " << ball.y_pos << ").\n";
+	    //std::cout << "yellow: (" << yellow.x_pos << ", " << yellow.y_pos << ").\n";
+	    //std::cout << "blue: (" << blue.x_pos << ", " << blue.y_pos << ").\n";
+	    //std::cout << "ball: (" << ball.x_pos << ", " << ball.y_pos << ").\n";
 	    
+
+	    
+	    if (is_yellow) // yellow will be offense
+	    {
+	      
+	      
+	    }
+	    else	// blue will be defence
+	    {
+	      /*
+	       * Strategy: We want to say in a box in front of the goal, and position ourself such that
+	       * we are blocking the point 
+	       */
+	      
+	      newclient::Radio::Payload pld(2, aPID(blue.alpha, 3.14), 0, 0);
+	      
+		// we want to be facing towards center field
+	      
+		
+	      /*
+		if (blue.y_pos < goal_neg_y - 600)
+		  pld.x_vel = -1;
+		else if (blue.y_pos > goal_pos_y + 600)
+		  pld.x_vel = 1;
+		
+		if (blue.x_pos < goal_neg_x)
+		  pld.y_vel = 1;
+		else if (blue.x_pos > goal_neg_x + 600)
+		  pld.y_vel = -1;
+		*/
+		
+		
+		
+		
+	      radio.sendCommand(pld);
+	    }
+	    /*
 	    
 	    // check to see if there is an obstical in the box between yellow and ball
 	    if (blue.x_pos > min(yellow.x_pos, ball.x_pos) && blue.x_pos < max(yellow.x_pos, ball.x_pos) &&
@@ -56,7 +119,7 @@ int main(int argc, char **argv)
 	      
 	      /* need to find the line orthoganol to robot's differance slope and solve the two points on the
 	         sphere of infulance of the obstical and choose the one closet to out line assuming our line
-	         goes through the two points. */
+	         goes through the two points. 
 	      
 	      
 	      
@@ -100,6 +163,10 @@ int main(int argc, char **argv)
 	      
 	      
 	      double dif = atan2(p1_y - yellow.y_pos, p1_x - yellow.x_pos) - yellow.alpha;
+	      
+	      
+	      double dif = atan2(blue.y_pos - yellow.y_pos + 500, blue.x_pos - yellow.x_pos) - yellow.alpha;
+
 	      
 	      std::cout << "dif: " << dif << '\n';
 	    
@@ -154,8 +221,12 @@ int main(int argc, char **argv)
 		  std::cout << "ball in range!\n";
 		  break;
 	      }
+	      
+	      
 	      radio.sendCommand(payload);
+	      
 	  }
+	  */
 	}
 	else
 	  std::cerr << "Could not locate two robots\n";

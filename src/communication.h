@@ -33,7 +33,7 @@ namespace newclient
 
         virtual void sendCommand(const Payload &payload) = 0;
 
-        virtual void init() = 0;
+        virtual void init(bool _=false) = 0;
     };
 
     class Radio : public Communication
@@ -44,7 +44,7 @@ namespace newclient
         float kp, ki, kd;
     public:
 
-        void init() override;
+        void init(bool _=false) override;
 
         void sendCommand(const Payload &payload) override;
 
@@ -57,10 +57,11 @@ namespace newclient
         Net::Address addr;
         const int _port = 20011;
         const char *_addr = "127.0.0.1";
+	bool is_yellow;
     public:
         void sendCommand(const Payload &payload) override;
 
-        void init() override;
+        void init(bool yellow=true) override;
 
         ~Simulator()
         { udpsoc.close(); };

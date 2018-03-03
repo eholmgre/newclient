@@ -2,7 +2,7 @@
 
 namespace newclient
 {
-    void Radio::init()
+    void Radio::init(bool)
     {
         my_nrf24l01p.disable();
         my_nrf24l01p.powerDown();
@@ -39,8 +39,12 @@ namespace newclient
         kd = 12;
 
         putFrameFloat(1, 3, kp, ki, kd, (uint8_t *) txBuffer);
-        my_nrf24l01p.write(NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE);
-        std::cout << "Radio initalized\n";
+
+	
+        if (my_nrf24l01p.write(NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE) < 1)
+	  std::cout << "Error initalizing radio.\n";
+        else
+	  std::cout << "Radio initalized\n";
     }
 
 
@@ -50,17 +54,18 @@ namespace newclient
         my_nrf24l01p.write(NRF24L01P_PIPE_P0, txBuffer, TRANSFER_SIZE);
     }
 
-    void Simulator::init()
+    void Simulator::init(bool _yellow)
     {
+	is_yellow = _yellow;
         udpsoc.open(_port);
         addr.setHost(_addr, _port);
         std::cout << "initialized Simulator UDP socket on " << _addr << ", " << _port << ".\n";
     }
 
-    void Simulator::sendCommand(const Communication::Payload &payload)
+    void Simulator::sendCommand(const Payload &payload)
     {
         grSim_Packet packet;
-        packet.mutable_commands()->set_isteamyellow(true);
+        packet.mutable_commands()->set_isteamyellow(is_yellow);
         packet.mutable_commands()->set_timestamp(0.0);
         grSim_Robot_Command *cmd = packet.mutable_commands()->add_robot_commands();
         cmd->set_id(payload.id);
